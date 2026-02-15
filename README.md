@@ -1,20 +1,44 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 創業計画書作成支援アプリ
 
-# Run and deploy your AI Studio app
+本アプリケーションは、副業や新規開業を目指す方が、日本政策金融公庫などの公的機関に提出する「創業計画書」をAIのサポートを受けながら簡単に作成できる支援ツールです。
 
-This contains everything you need to run your app locally.
+## 🚀 主な機能
 
-View your app in AI Studio: https://ai.studio/apps/drive/16fdBVvfJTmcAD_50kdmt5UGGrqe8Wiid
+- **AI文章作成サポート**: 「創業の動機」や「セールスポイント」などの入力メモを、Gemini APIを使用してプロフェッショナルな文章に清書・強化します。
+- **職務経歴書(PDF)解析**: お手持ちのPDF形式の職務経歴書をアップロードするだけで、AIが氏名、経歴、資格などを自動的に抽出・入力します。
+- **収支計画の自動計算**: 創業当初と1年後の売上・経費を入力することで、営業利益を自動計算し可視化します。
+- **マルチ形式エクスポート**: 
+  - **Excel出力**: データの加工や保存に便利な .xlsx 形式で出力。
+  - **Markdown出力**: ドキュメント管理やメモアプリへの転記に便利な .md 形式で出力。
+  - **印刷対応プレビュー**: 提出書類に近いレイアウトでのプレビュー表示およびA4印刷が可能です。
+- **レスポンシブデザイン**: PCだけでなく、タブレットやスマートフォンからも入力・確認が可能です。
 
-## Run Locally
+## 🛠 使用技術
 
-**Prerequisites:**  Node.js
+- **Frontend**: React 19, Tailwind CSS
+- **Icons**: Lucide React
+- **AI**: Google Gemini API (`gemini-3-flash-preview`)
+- **Library**: `xlsx` (Excel出力用)
+- **Architecture**: コンポーネント指向のクリーンな設計
 
+## 📖 使い方
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. **基本情報の入力 (Step 1)**: 
+   - PDFのアップロードによる自動入力、または手動で氏名や創業の動機を入力します。
+   - 「AIで清書」ボタンを押すと、入力した箇条書きなどを説得力のある文章に変換します。
+2. **事業内容・戦略の策定 (Step 2-5)**:
+   - 取扱商品、セールスポイント、ターゲット、取引先関係などを順に入力します。
+3. **収支計画の作成 (Step 6)**:
+   - 売上や経費の予測値を入力し、事業の見通しを立てます。
+4. **プレビューと出力**:
+   - 画面上部の「プレビュー」タブから完成イメージを確認し、必要に応じて「印刷」「Excel出力」「MD出力」を行ってください。
+
+## 📝 注意事項
+
+- 本アプリで生成された文章はAIによる提案です。提出前には必ず内容をご自身で確認・修正してください。
+- 解析可能なPDFは、テキストデータが含まれているものに限ります（スキャンされた画像のみのPDFは解析できない場合があります）。
+- 本アプリはブラウザ上での動作を基本としており、入力データはブラウザのセッション内で管理されます。
+
+## 📄 開発者向け
+
+本プロジェクトは `index.html` と `index.tsx` を起点とするシンプルなESモジュール構成になっています。環境変数 `process.env.API_KEY` にGoogle Gemini APIのキーを設定して動作させることを前提としています。

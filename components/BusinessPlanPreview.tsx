@@ -34,7 +34,24 @@ const BusinessPlanPreview: React.FC<Props> = ({ data }) => {
       </div>
 
       <Section title="1 創業の動機">
-        <p className="whitespace-pre-wrap min-h-[3em]">{data.motivation || '（未入力）'}</p>
+        <div className="space-y-4">
+          <div>
+            <span className="font-bold underline mb-1 block">創業の動機</span>
+            <p className="whitespace-pre-wrap min-h-[3em]">{data.motivation || '（未入力）'}</p>
+          </div>
+          
+          {data.marketBackground && (
+            <div className="mt-4 p-4 bg-slate-50 border-l-4 border-slate-300">
+              <span className="font-bold mb-1 block">【市場の背景・有望性】</span>
+              <p className="text-[9pt] leading-relaxed whitespace-pre-wrap">{data.marketBackground}</p>
+              {data.marketSources.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-200 text-[7pt] text-slate-500">
+                  出典: {data.marketSources.map(s => s.title).join('、 ')}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </Section>
 
       <Section title="2 経営者の略歴等">

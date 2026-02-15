@@ -1,16 +1,48 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { initialData, BusinessPlanData } from './types';
 import BusinessPlanForm from './components/BusinessPlanForm';
 import BusinessPlanPreview from './components/BusinessPlanPreview';
-import { Layout, FileText, Download, Save, Printer, ChevronLeft, ChevronRight, FileCode } from 'lucide-react';
+import { Layout, FileText, Download, Save, Printer, ChevronLeft, ChevronRight, FileCode, RotateCcw, CloudCheck, Cloud } from 'lucide-react';
 import { exportToExcel, exportToMarkdown } from './utils/exportUtils';
+
+const STORAGE_KEY = 'business_plan_draft_v1';
 
 const App: React.FC = () => {
   const [data, setData] = useState<BusinessPlanData>(initialData);
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [step, setStep] = useState(1);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const totalSteps = 6;
+
+  // 1. マウント時にデータを読み込む
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setData(parsed);
+        setLastSaved(new Date());
+      } catch (e) {
+        console.error("Failed to load saved data", e);
+      }
+    }
+  }, []);
+
+  // 2. データが変更されたら自動保存する
+  useEffect(() => {
+    // 初期の空データでないことを確認して保存（またはマウント後の初回実行を許容）
+    const saveTimer = setTimeout(() => {
+      setIsSaving(true);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      setLastSaved(new Date());
+      // 保存アニメーション用のウェイト
+      setTimeout(() => setIsSaving(false), 500);
+    }, 1000); // タイピングが終わって1秒後に保存
+
+    return () => clearTimeout(saveTimer);
+  }, [data]);
 
   const handleUpdate = (newData: Partial<BusinessPlanData>) => {
     setData(prev => ({ ...prev, ...newData }));
@@ -27,18 +59,49 @@ const App: React.FC = () => {
     exportToMarkdown(data);
   };
 
+  const handleReset = () => {
+    if (window.confirm('入力内容をすべて削除して、最初から作り直しますか？')) {
+      localStorage.removeItem(STORAGE_KEY);
+      setData(initialData);
+      setStep(1);
+      setLastSaved(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-2">
-          <div className="bg-blue-600 p-1.5 rounded-lg">
-            <Layout className="w-5 h-5 text-white" />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-600 p-1.5 rounded-lg">
+              <Layout className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="font-bold text-lg hidden md:block text-slate-800">創業計画書作成支援アプリ</h1>
           </div>
-          <h1 className="font-bold text-lg hidden md:block text-slate-800">創業計画書作成支援アプリ</h1>
+          
+          {/* Save Status Indicator */}
+          <div className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+            {isSaving ? (
+              <>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                <span>保存中...</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <CloudCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span>保存済み ({lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})</span>
+              </>
+            ) : (
+              <>
+                <Cloud className="w-3.5 h-3.5" />
+                <span>未保存</span>
+              </>
+            )}
+          </div>
         </div>
 
-        <nav className="flex items-center bg-slate-100 p-1 rounded-xl">
+        <nav className="flex items-center bg-slate-100 p-1 rounded-xl mx-2">
           <button
             onClick={() => setActiveTab('edit')}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
@@ -58,6 +121,15 @@ const App: React.FC = () => {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button 
+            onClick={handleReset}
+            className="flex items-center gap-2 text-slate-400 hover:text-rose-500 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            title="内容をリセット"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span className="hidden lg:inline">リセット</span>
+          </button>
+          <div className="w-px h-6 bg-slate-200 mx-1 hidden lg:block" />
           <button 
             onClick={handleExportMarkdown}
             className="flex items-center gap-2 bg-slate-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors"
@@ -101,7 +173,12 @@ const App: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto p-4 md:p-8">
               <div className="max-w-4xl mx-auto">
-                <BusinessPlanForm step={step} data={data} onUpdate={handleUpdate} />
+                <BusinessPlanForm 
+                  step={step} 
+                  data={data} 
+                  onUpdate={handleUpdate} 
+                  onNext={nextStep}
+                />
               </div>
             </div>
 

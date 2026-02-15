@@ -3,6 +3,8 @@ export interface BusinessPlanData {
   ownerName: string;
   date: string;
   motivation: string;
+  marketBackground: string; // 追加: 市場の背景
+  marketSources: { title: string; uri: string }[]; // 追加: 引用元URL
   background: string;
   pastExperience: 'none' | 'ongoing' | 'quit';
   pastExperienceDetail: string;
@@ -74,6 +76,8 @@ export const initialData: BusinessPlanData = {
   ownerName: '',
   date: new Date().toISOString().split('T')[0],
   motivation: '',
+  marketBackground: '',
+  marketSources: [],
   background: '',
   pastExperience: 'none',
   pastExperienceDetail: '',

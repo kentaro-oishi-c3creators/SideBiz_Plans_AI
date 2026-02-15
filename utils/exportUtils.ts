@@ -14,6 +14,7 @@ export const exportToExcel = (data: BusinessPlanData) => {
     [],
     ["1. 創業の動機"],
     [data.motivation],
+    ["市場の背景 (リサーチ結果)", data.marketBackground],
     [],
     ["2. 経営者の略歴等"],
     [data.background],
@@ -61,7 +62,13 @@ export const exportToMarkdown = (data: BusinessPlanData) => {
 **氏名:** ${data.ownerName || '未入力'}
 
 ## 1. 創業の動機
+### 動機
 ${data.motivation || '未入力'}
+
+### 市場の背景・有望性 (最新トレンド調査)
+${data.marketBackground || '未入力'}
+
+${data.marketSources.length > 0 ? `**出典:**\n${data.marketSources.map(s => `- [${s.title}](${s.uri})`).join('\n')}` : ''}
 
 ## 2. 経営者の略歴等
 ### 略歴
