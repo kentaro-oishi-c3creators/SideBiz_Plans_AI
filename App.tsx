@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { initialData, BusinessPlanData } from './types';
 import BusinessPlanForm from './components/BusinessPlanForm';
 import BusinessPlanPreview from './components/BusinessPlanPreview';
-import { Layout, FileText, Download, Save, Printer, ChevronLeft, ChevronRight } from 'lucide-react';
-import { exportToExcel } from './utils/exportUtils';
+import { Layout, FileText, Download, Save, Printer, ChevronLeft, ChevronRight, FileCode } from 'lucide-react';
+import { exportToExcel, exportToMarkdown } from './utils/exportUtils';
 
 const App: React.FC = () => {
   const [data, setData] = useState<BusinessPlanData>(initialData);
@@ -19,8 +19,12 @@ const App: React.FC = () => {
   const nextStep = () => setStep(s => Math.min(s + 1, totalSteps));
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
-  const handleExport = () => {
+  const handleExportExcel = () => {
     exportToExcel(data);
+  };
+
+  const handleExportMarkdown = () => {
+    exportToMarkdown(data);
   };
 
   return (
@@ -31,7 +35,7 @@ const App: React.FC = () => {
           <div className="bg-blue-600 p-1.5 rounded-lg">
             <Layout className="w-5 h-5 text-white" />
           </div>
-          <h1 className="font-bold text-lg hidden md:block text-slate-800">SideBiz Plan AI</h1>
+          <h1 className="font-bold text-lg hidden md:block text-slate-800">創業計画書作成支援アプリ</h1>
         </div>
 
         <nav className="flex items-center bg-slate-100 p-1 rounded-xl">
@@ -55,12 +59,20 @@ const App: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <button 
-            onClick={handleExport}
+            onClick={handleExportMarkdown}
+            className="flex items-center gap-2 bg-slate-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors"
+            title="Markdownで書き出し"
+          >
+            <FileCode className="w-4 h-4" />
+            <span className="hidden lg:inline">MD出力</span>
+          </button>
+          <button 
+            onClick={handleExportExcel}
             className="flex items-center gap-2 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
             title="Excelで書き出し"
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Excel出力</span>
+            <span className="hidden lg:inline">Excel出力</span>
           </button>
           <button 
             onClick={() => window.print()}

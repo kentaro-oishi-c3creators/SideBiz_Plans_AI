@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { BusinessPlanData } from '../types';
-import { Sparkles, Loader2, Info, FileUp, Upload } from 'lucide-react';
+import { Sparkles, Loader2, Info, FileUp, Upload, Calendar as CalendarIcon } from 'lucide-react';
 import { generateContent, extractDataFromPDF } from '../geminiService';
 
 interface Props {
@@ -14,6 +14,7 @@ const BusinessPlanForm: React.FC<Props> = ({ step, data, onUpdate }) => {
   const [loadingSection, setLoadingSection] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const handleAIHelp = async (section: keyof BusinessPlanData, title: string) => {
     const prompt = (data[section] as string) || '';
@@ -56,6 +57,9 @@ const BusinessPlanForm: React.FC<Props> = ({ step, data, onUpdate }) => {
     }
   };
 
+  // yyyy-mm-dd -> yyyy/mm/dd
+  const displayDate = data.date ? data.date.replace(/-/g, '/') : '';
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -89,7 +93,33 @@ const BusinessPlanForm: React.FC<Props> = ({ step, data, onUpdate }) => {
             </section>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">作成日</label>
+                <div 
+                  className="relative cursor-pointer"
+                  onClick={() => dateInputRef.current?.showPicker()}
+                >
+                  <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    readOnly
+                    className="w-full pl-12 p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer bg-white"
+                    value={displayDate}
+                    placeholder="yyyy/mm/dd"
+                  />
+                  <input
+                    type="date"
+                    ref={dateInputRef}
+                    className="absolute inset-0 opacity-0 pointer-events-none"
+                    value={data.date}
+                    onChange={(e) => onUpdate({ date: e.target.value })}
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <CalendarIcon className="w-4 h-4 text-slate-300" />
+                  </div>
+                </div>
+              </div>
+              <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">お名前</label>
                 <input
                   className="w-full p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"

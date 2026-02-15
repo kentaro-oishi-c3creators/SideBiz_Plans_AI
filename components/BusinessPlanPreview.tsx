@@ -14,12 +14,18 @@ const BusinessPlanPreview: React.FC<Props> = ({ data }) => {
     return p.sales - (p.costOfSales + p.labor + p.rent + p.interest + p.others);
   };
 
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '    /  /  ';
+    // HTML date input is yyyy-mm-dd, replace with yyyy/mm/dd
+    return dateStr.replace(/-/g, '/');
+  };
+
   return (
     <div className="bg-white shadow-2xl max-w-4xl mx-auto p-[10mm] min-h-[297mm] text-[10pt] leading-relaxed text-slate-900 font-serif print:shadow-none print:m-0">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold tracking-widest border-b-4 border-double border-slate-900 pb-2 inline-block">創業計画書</h1>
         <div className="text-right mt-2">
-          <span>令和 {new Date().getFullYear() - 2018} 年 {new Date().getMonth() + 1} 月 {new Date().getDate()} 日 作成</span>
+          <span>{formatDate(data.date)} 作成</span>
         </div>
       </div>
 
